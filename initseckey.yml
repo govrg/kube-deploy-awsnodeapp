@@ -1,0 +1,31 @@
+---
+- hosts: master
+  become: yes
+ 
+  tasks:
+    - include_vars: dockpass.yml
+
+    - name: deploy the aws nodejs app
+      become: yes
+      become_user: vagrant
+      shell: sudo kubectl apply -f ~/kube-deploy-awsnodeapp/deploy-yml/deploynode.yaml
+
+    - name: Load data
+      tags: always
+      set_fact:
+        dock_usr: "{{ lookup('env', 'dock_usr') }}"
+        dock_email: "{{ lookup('env', 'dock_email') }}"
+
+    #- name: get passw
+    #  debug:
+    #    msg: "{{ passw }}, {{ dock_usr }}, {{ dock_email}}"
+
+    - name: create myregistrykey
+      become: yes
+      become_user: vagrant
+      shell: sudo kubectl create secret docker-registry myregistrykey --docker-server=https://index.docker.io/v1/ --docker-username={{ dock_usr }} --docker-password={{ passw }} --docker-email={{ dock_email }}
+
+    - name: expose the NodePort for the aws nodejs app
+      become: yes
+      become_user: vagrant
+      shell: sudo kubectl apply -f ~/kube-deploy-awsnodeapp/deploy-yml/servicenode.yaml

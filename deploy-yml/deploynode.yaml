@@ -1,0 +1,29 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: node-deploy
+spec:
+  replicas: 1
+  minReadySeconds: 10
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: awsgovrg
+  template:
+    metadata:
+      labels:
+        app: awsgovrg
+        run: v1
+    spec:
+      containers:
+      - name: node-ctr
+        image: govrg/awsnodeapp
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 3000
+      imagePullSecrets:
+      - name: myregistrykey

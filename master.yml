@@ -1,0 +1,36 @@
+---
+- hosts: master
+  become: yes
+  tasks:
+    - name: disable swap memory
+      shell: swapoff -a
+
+    - name: initialize the cluster
+      become: yes
+      become_user: vagrant
+      shell: sudo kubeadm init --pod-network-cidr=192.168.0.0/16 --apiserver-advertise-address=192.168.33.101 >> cluster_initialized.txt
+
+    - name: create .kube directory
+      become: yes
+      become_user: vagrant
+      file:
+        path: $HOME/.kube
+        state: directory
+        mode: 0755
+
+    - name: copy admin.conf to user's kube config
+      copy:
+        src: /etc/kubernetes/admin.conf
+        dest: /home/vagrant/.kube/config
+        remote_src: yes
+        owner: vagrant
+
+    - name: make owner 
+      become: yes
+      become_user: vagrant
+      shell: sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+    - name: install Pod network
+      become: yes
+      become_user: vagrant
+      shell: sudo kubectl apply -f https://docs.projectcalico.org/v3.5/getting-started/kubernetes/installation/hosted/kubernetes-datastore/calico-networking/1.7/calico.yaml

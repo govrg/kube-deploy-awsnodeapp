@@ -1,0 +1,24 @@
+---
+- hosts: all
+  become: yes
+  tasks:
+    - name: create the 'vagrant' user
+      become_user: root
+      user: name=vagrant append=yes state=present createhome=yes shell=/bin/bash
+
+    - name: allow 'vagrant' to have passwordless sudo
+      become_user: root
+      lineinfile:
+        dest: /etc/sudoers
+        line: 'vagrant ALL=(ALL) NOPASSWD: ALL'
+        validate: 'visudo -cf %s'
+
+    - name: set up authorized keys for the vagrant user
+      become_user: root
+      become: true      
+      authorized_key: 
+        user: vagrant
+        key: '{{ item }}'
+        state: present
+      with_file:
+        - /home/vagrant/ssh-host/id_rsa.pub

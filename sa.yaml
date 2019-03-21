@@ -1,0 +1,14 @@
+apiVersion: v1
+imagePullSecrets:
+- name: myregistrykey
+kind: ServiceAccount
+metadata:
+  creationTimestamp: "2019-03-01T09:44:40Z"
+  name: default
+  namespace: default
+  selfLink: /api/v1/namespaces/default/serviceaccounts/default
+  uid: a230bc18-3c06-11e9-8577-080027c2be11
+secrets:
+- name: default-token-tkqtt
+imagePullSecrets:
+- name: myregistrykey
