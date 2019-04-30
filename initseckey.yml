@@ -13,8 +13,8 @@
     - name: Load data
       tags: always
       set_fact:
-        dock_usr: "{{ lookup('env', 'dock_usr') }}"
-        dock_email: "{{ lookup('env', 'dock_email') }}"
+        dock_usr: "{{ lookup('env', 'DOCKER_USR') }}"
+        dock_email: "{{ lookup('env', 'DOCKER_EMAIL') }}"
 
     #- name: get passw
     #  debug:
